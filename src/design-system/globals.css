@@ -1,0 +1,134 @@
+
+/*
+ * CAOS Design Tokens
+ * White-first technical interface
+ * HSL channel values for Tailwind v3
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root,
+[data-caos-theme="core"] {
+  --radius: 0.5rem;
+
+  /* Base */
+  --background: 0 0% 100%;
+  --foreground: 218 42% 11%;
+
+  /* Content */
+  --card: 0 0% 100%;
+  --card-foreground: 218 42% 11%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 218 42% 11%;
+
+  /* Actions */
+  --primary: 218 42% 11%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 220 33% 96%;
+  --secondary-foreground: 218 42% 11%;
+
+  --accent: 216 100% 97%;
+  --accent-foreground: 221 83% 45%;
+
+  /* Neutral */
+  --muted: 220 33% 97%;
+  --muted-foreground: 215 19% 40%;
+
+  --border: 216 29% 88%;
+  --input: 216 29% 88%;
+  --ring: 221 83% 53%;
+
+  /* Surfaces */
+  --surface: 220 33% 98%;
+  --surface-raised: 0 0% 100%;
+  --surface-recessed: 220 23% 94%;
+
+  /* Runtime signal */
+  --signal: 192 91% 36%;
+  --signal-foreground: 0 0% 100%;
+
+  /* States */
+  --success: 160 84% 30%;
+  --success-foreground: 0 0% 100%;
+
+  --warning: 32 95% 42%;
+  --warning-foreground: 0 0% 100%;
+
+  --destructive: 0 72% 49%;
+  --destructive-foreground: 0 0% 100%;
+
+  --info: 221 83% 53%;
+  --info-foreground: 0 0% 100%;
+
+  /* Data */
+  --chart-1: 221 83% 53%;
+  --chart-2: 192 91% 36%;
+  --chart-3: 262 83% 58%;
+  --chart-4: 160 84% 30%;
+  --chart-5: 32 95% 42%;
+}
+
+/* CAOS Circuit: infrastructure and connectivity */
+[data-CAOS-theme="circuit"] {
+  --primary: 192 91% 36%;
+  --primary-foreground: 0 0% 100%;
+
+  --accent: 190 80% 96%;
+  --accent-foreground: 192 91% 28%;
+
+  --ring: 192 91% 36%;
+  --signal: 173 80% 30%;
+  --signal-foreground: 0 0% 100%;
+
+  --chart-1: 192 91% 36%;
+  --chart-2: 173 80% 30%;
+  --chart-3: 221 83% 53%;
+  --chart-4: 262 83% 58%;
+  --chart-5: 32 95% 42%;
+}
+
+/* CAOS Pulse: intelligence and orchestration */
+[data-CAOS-theme="pulse"] {
+  --primary: 262 83% 58%;
+  --primary-foreground: 0 0% 100%;
+
+  --accent: 263 100% 97%;
+  --accent-foreground: 263 70% 43%;
+
+  --ring: 262 83% 58%;
+  --signal: 239 84% 67%;
+  --signal-foreground: 0 0% 100%;
+
+  --chart-1: 262 83% 58%;
+  --chart-2: 239 84% 67%;
+  --chart-3: 192 91% 36%;
+  --chart-4: 160 84% 30%;
+  --chart-5: 32 95% 42%;
+}
+
+/* Shared foundation */
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+
+  ::selection {
+    background: hsl(var(--primary) / 0.15);
+    color: hsl(var(--foreground));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-step-sweep,
+  .animate-signal-pulse {
+    animation: none;
+  }
+}

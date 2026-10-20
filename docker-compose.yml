@@ -1,0 +1,22 @@
+# ./docker-compose.yml
+services:
+  agentverse-client:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:4000" # host:container
+    env_file:
+      - .env
+    environment:
+      - NODE_OPTIONS=--dns-result-order=ipv4first
+    restart: always
+    networks: [agentverse_net]
+    # On macOS/Windows, host.docker.internal works out of the box.
+    # (If you later run on Linux, add the extra_hosts line below)
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+networks:
+  agentverse_net:
+    driver: bridge

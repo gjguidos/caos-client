@@ -1,0 +1,36 @@
+{
+  ":root": {
+    "--bg-from": "0 0% 100%",
+    "--bg-to": "0 0% 0%",
+    "--foreground": "0 0% 0%",
+    "--card": "0 0% 98%",
+    "--card-foreground": "0 0% 0%",
+    "--popover": "0 0% 96%",
+    "--popover-foreground": "0 0% 0%",
+    "--primary": "210 100% 50%",
+    "--primary-foreground": "0 0% 100%",
+    "--muted": "0 0% 90%",
+    "--muted-foreground": "0 0% 30%",
+    "--border": "0 0% 80%",
+    "--input": "0 0% 98%",
+    "--ring": "210 100% 60%",
+    "--radius": "0.5rem"
+  },
+  ".dark": {
+    "--bg-from": "0 0% 0%",
+    "--bg-to": "0 0% 100%",
+    "--foreground": "0 0% 100%",
+    "--card": "0 0% 10%",
+    "--card-foreground": "0 0% 100%",
+    "--popover": "0 0% 12%",
+    "--popover-foreground": "0 0% 100%",
+    "--primary": "210 100% 60%",
+    "--primary-foreground": "0 0% 0%",
+    "--muted": "0 0% 20%",
+    "--muted-foreground": "0 0% 80%",
+    "--border": "0 0% 30%",
+    "--input": "0 0% 12%",
+    "--ring": "210 100% 70%",
+    "--radius": "0.5rem"
+  }
+}
