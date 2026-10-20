@@ -1,0 +1,83 @@
+/*
+ * Scoped SKAPA styling for the create/edit agent wizard.
+ * Targets fields inside `.agent-wizard-fields` only, so shared primitives
+ * (Input, Select) keep their default look everywhere else in the app.
+ */
+
+.agent-wizard-card {
+  background: rgb(var(--colour-neutral-1));
+  border: 1px solid rgb(var(--colour-neutral-3));
+  border-radius: 14px;
+  padding: 30px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/*
+ * `.search__input` is opted out throughout: Skapa's Search positions its icon
+ * and clear button against its own padding, so re-styling the inner input
+ * pushes them on top of the placeholder.
+ */
+.agent-wizard-fields button[role="combobox"],
+.agent-wizard-fields
+  input:not([type="checkbox"]):not([type="radio"]):not(.search__input),
+.agent-wizard-fields textarea {
+  min-height: 50px;
+  border: 1px solid rgb(var(--colour-neutral-5));
+  border-radius: 6px;
+  background: rgb(var(--colour-neutral-1));
+  padding: 0 15px;
+  font-size: 15px;
+  color: rgb(var(--colour-text-and-icon-1));
+}
+
+.agent-wizard-fields textarea {
+  padding: 12px 15px;
+  line-height: 1.5;
+}
+
+.agent-wizard-fields button[role="combobox"]:focus-visible,
+.agent-wizard-fields button[role="combobox"][data-state="open"],
+.agent-wizard-fields
+  input:not([type="checkbox"]):not([type="radio"]):not(
+    .search__input
+  ):focus-visible,
+.agent-wizard-fields textarea:focus-visible {
+  border: 2px solid rgb(var(--colour-semantic-informative));
+  box-shadow: 0 0 0 3px rgba(0, 88, 163, 0.08);
+  outline: none;
+}
+
+.agent-wizard-fields button[role="combobox"][aria-invalid="true"],
+.agent-wizard-fields input[aria-invalid="true"]:not(.search__input),
+.agent-wizard-fields textarea[aria-invalid="true"] {
+  border-color: rgb(var(--colour-semantic-negative));
+}
+
+.agent-wizard-fields label {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgb(var(--colour-text-and-icon-1));
+}
+
+/*
+ * The tools list filters as you type, so Skapa's submit button has nothing to
+ * do. Its clear button stays. Both carry `search__action`; only the clear one
+ * carries `search__clear`.
+ */
+.tool-search .search__divider,
+.tool-search .search__action:not(.search__clear) {
+  display: none;
+}
+
+.agent-wizard-scroll::-webkit-scrollbar {
+  width: 10px;
+}
+.agent-wizard-scroll::-webkit-scrollbar-thumb {
+  background: rgb(var(--colour-neutral-4));
+  border-radius: 8px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+.agent-wizard-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
