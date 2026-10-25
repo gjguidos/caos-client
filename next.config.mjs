@@ -57,7 +57,7 @@ const nextConfig = {
   },
   async rewrites() {
     const serverBase =
-      process.env.NEXT_SERVER_BASE_URL || "http://agentverse:8000"; // production should set NEXT_SERVER_BASE_URL
+      process.env.NEXT_SERVER_BASE_URL || "http://agentverse:8001"; // production should set NEXT_SERVER_BASE_URL
 
     // TEMP DEBUG: print which server base is being used during build/start (remove after verification)
     try {
@@ -81,7 +81,7 @@ const nextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "http://agentverse:8000/:path*",
+        destination: "http://agentverse:8001/:path*",
       },
     ];
   },

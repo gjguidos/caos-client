@@ -53,5 +53,3 @@ llmDocs/
 CLAUDE.md
 docs/jira/
 docs/TODO/
-
-shared/auth/local-session.ts

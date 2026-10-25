@@ -10,8 +10,8 @@ vi.mock("@/shared/auth/lib/utils", () => ({
 
 describe("wsUrlBuilder", () => {
   describe("buildAgentWebSocketUrl", () => {
-    const API_BASE = "http://localhost:8000/api";
-    const WS_BASE = "ws://localhost:8000/api";
+    const API_BASE = "http://localhost:8001/api";
+    const WS_BASE = "ws://localhost:8001/api";
     const AGENT_SYSTEM_NAME = "test-agent";
     const AGENT_NAME = "Test Agent";
     const TOKEN = "mock-jwt-token";

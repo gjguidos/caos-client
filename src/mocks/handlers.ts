@@ -18,7 +18,7 @@ export const handlers = [
     return HttpResponse.json({ token: MOCK_JWT });
   }),
 
-  http.get("http://localhost:8000/api/v1/agents/id/:agentId", () => {
+  http.get("http://localhost:8001/api/v1/agents/id/:agentId", () => {
     return HttpResponse.json({
       success: true,
       data: mockAgentData,

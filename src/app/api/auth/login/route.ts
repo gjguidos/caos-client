@@ -1,3 +1,6 @@
+import { createLocalAccessToken } from "@/shared/auth/local/local-token";
+import { getLocalSession } from "@/shared/auth/local/local-session";
+import { setSessionCookie } from "@/shared/auth/lib/session";
 import { getBaseUrl } from "@/shared/auth/lib/utils";
 import { storePkceCode } from "@/shared/auth/msal/pkce";
 import { getMsalClient } from "@/shared/auth/msal/server-client";
@@ -11,6 +14,30 @@ export const runtime = "nodejs";
 
 export async function GET(req: Request) {
   try {
+    if (
+      process.env.AUTH_MODE === "local" &&
+      process.env.NODE_ENV !== "production"
+    ) {
+      const session = getLocalSession();
+      if (process.env.GENESIS_LOGOUT_REQUIRED === "true") {
+        const endpoint = process.env.GENESIS_LOCAL_SESSION_URL;
+        if (!endpoint) throw new Error("GENESIS_LOCAL_SESSION_URL missing");
+        const token = await createLocalAccessToken();
+        const upstream = await fetch(endpoint, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          cache: "no-store",
+          redirect: "error",
+          signal: AbortSignal.timeout(5000),
+        });
+        if (upstream.status !== 201)
+          throw new Error("Local session provisioning failed");
+        session.localAccessToken = token;
+      }
+      const res = NextResponse.redirect(`${getBaseUrl(req)}/`, { status: 302 });
+      await setSessionCookie(res, session);
+      return res;
+    }
     const msal = getMsalClient();
 
     // Generate PKCE codes

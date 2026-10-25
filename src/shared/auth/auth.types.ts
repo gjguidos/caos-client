@@ -1,5 +1,6 @@
 export type Session = {
   sub: string;
+  localAccessToken?: string;
   name?: string;
   preferred_username?: string;
   homeAccountId?: string;

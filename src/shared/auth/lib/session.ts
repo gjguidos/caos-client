@@ -17,8 +17,7 @@ function secret() {
 
 function isLocalAuth(): boolean {
   return (
-    process.env.AUTH_MODE === "local" &&
-    process.env.NODE_ENV !== "production"
+    process.env.AUTH_MODE === "local" && process.env.NODE_ENV !== "production"
   );
 }
 
@@ -50,22 +49,28 @@ export function clearSessionCookie(res: Response) {
   );
 }
 
-export async function readSession(
-  req: Request
-): Promise<Session | null> {
-  if (isLocalAuth()) {
+export async function readSession(req: Request): Promise<Session | null> {
+  if (isLocalAuth() && process.env.GENESIS_LOGOUT_REQUIRED !== "true") {
     return getLocalSession();
   }
 
   const cookie = req.headers.get("cookie") || "";
-  const match = cookie.match(
-    new RegExp(`${COOKIE}=([^;]+)`)
-  );
+  const match = cookie.match(new RegExp(`${COOKIE}=([^;]+)`));
 
   if (!match) return null;
 
   try {
     const { payload } = await jwtVerify(match[1], secret());
+    if (isLocalAuth() && process.env.GENESIS_LOGOUT_REQUIRED === "true") {
+      if (typeof payload.localAccessToken !== "string") return null;
+      const key = process.env.LOCAL_JWT_SECRET;
+      if (!key) return null;
+      await jwtVerify(payload.localAccessToken, new TextEncoder().encode(key), {
+        algorithms: ["HS256"],
+        issuer: "CAOS-local",
+        audience: "CAOS-api",
+      });
+    }
     return payload as Session;
   } catch {
     return null;

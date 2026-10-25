@@ -39,7 +39,7 @@ function trackServerSockets() {
 }
 
 describe("useWebSocketConnection", () => {
-  const TEST_URL = "ws://localhost:8000/ws/api/v1/agent/test-agent";
+  const TEST_URL = "ws://localhost:8001/ws/api/v1/agent/test-agent";
   const TEST_MESSAGE = "Hello WebSocket";
 
   beforeEach(() => {
@@ -340,7 +340,7 @@ describe("useWebSocketConnection", () => {
       const onMessage = vi.fn();
       const onClose = vi.fn();
       const INITIAL_URL = TEST_URL;
-      const NEW_URL = "ws://localhost:8000/ws/api/v1/agent/new-agent";
+      const NEW_URL = "ws://localhost:8001/ws/api/v1/agent/new-agent";
 
       const { rerender } = renderHook(
         ({ url }) =>
@@ -369,7 +369,7 @@ describe("useWebSocketConnection", () => {
 
     it("keeps the new socket usable after a URL change", async () => {
       const onMessage = vi.fn();
-      const NEW_URL = "ws://localhost:8000/ws/api/v1/agent/new-agent";
+      const NEW_URL = "ws://localhost:8001/ws/api/v1/agent/new-agent";
       const { received, waitForClose } = trackServerSockets();
 
       const { result, rerender } = renderHook(

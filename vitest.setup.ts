@@ -57,7 +57,7 @@ globalThis.ResizeObserver ??= class {
   unobserve() {}
   disconnect() {}
 };
-const mockGetPublicApiBase = () => "http://localhost:8000/api";
+const mockGetPublicApiBase = () => "http://localhost:8001/api";
 vi.mock("@/shared/lib/getApiClient", () => ({
   getPublicApiBase: mockGetPublicApiBase,
   default: mockGetPublicApiBase,
