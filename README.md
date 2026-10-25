@@ -283,3 +283,10 @@ CAOS is a fork/evolution of the AgentVerse client, and migration may be ongoing.
 routes, dependencies, or configuration may still exist. This README describes the **target
 direction** where migration is incomplete; the checked-in code and configuration remain
 authoritative for exact runtime behavior.
+
+
+### Opt-in Genesis 0.2 conversation workspace
+
+Open `/v2/conversations` for the isolated deterministic V2 workspace. See
+[setup, routes, contracts, limits and browser tests](docs/V2_CONVERSATIONS.md).
+V1 chat remains on its existing routes. Backend list/history APIs are not yet available.

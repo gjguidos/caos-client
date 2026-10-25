@@ -17,7 +17,7 @@ import { PageHeader } from "@/shared/components/PageHeader/PageHeader";
 import { withReturnTo } from "@/shared/lib/navigation/returnTo";
 import { Info, Loader2, Pencil } from "lucide-react";
 import Link from "next/link";
-import { useParams, usePathname } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AgentMessage } from "@/app/(workspace)/_components/AgentMessage/AgentMessage";
 import { EmptyConversation } from "../../_components/EmptyConversation/EmptyConversation";
@@ -32,6 +32,7 @@ import type { ChatMsg } from "@/app/(workspace)/_types/chat.types";
 export default function AgentChat() {
   const { agent_system_name, agent_id } = useParams();
   const pathname = usePathname();
+  const router = useRouter();
 
   const { userId, isAuthLoading, canCreateAgent } = useAuth();
 
@@ -50,6 +51,13 @@ export default function AgentChat() {
   const agent = useAgentData({
     agentId: agent_id as string,
   });
+  const isV2 = agent.agentData?.runtime_version === "v2";
+  useEffect(() => {
+    if (isV2)
+      router.replace(
+        `/v2/conversations?agent=${encodeURIComponent(agent_id as string)}`
+      );
+  }, [isV2, router, agent_id]);
   const agentName: string = agent.agentData?.name ?? "";
   // `role_name` is a role registry key; it selects the pre-opened tool.
   const roleKey: string = agent.agentData?.role_name ?? "";
@@ -68,7 +76,7 @@ export default function AgentChat() {
     agentId: agent_id as string,
     agentName,
     userId: userId ?? "",
-    enabled: !!agent.agentData?.name && !!userId,
+    enabled: !!agent.agentData?.name && !!userId && !isV2,
     resolveToolDisplay: (message) =>
       findToolDisplayFromCommand(message, agent.enrichedTools),
   });
@@ -176,6 +184,8 @@ export default function AgentChat() {
     );
   };
 
+  if (isV2) return <p role="status">Opening V2 conversation setup...</p>;
+
   // Loading auth
   if (isAuthLoading) {
     return (
@@ -276,7 +286,11 @@ export default function AgentChat() {
           )}
           {chat.chatMessages.map(renderMessage)}
           {chat.isThinking && (
-            <div className="my-2 flex items-center gap-2 text-sm text-muted-foreground" role="status" aria-live="polite">
+            <div
+              className="my-2 flex items-center gap-2 text-sm text-muted-foreground"
+              role="status"
+              aria-live="polite"
+            >
               <Loader2 className="size-5 animate-spin" aria-hidden="true" />
               <span>Agent is thinking...</span>
             </div>

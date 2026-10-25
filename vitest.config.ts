@@ -8,6 +8,7 @@ export default defineConfig({
   plugins: [react()],
   test: {
     globals: true,
+    exclude: ["**/node_modules/**", "**/e2e/**"],
     environment: "jsdom",
     setupFiles: "./vitest.setup.ts",
     alias: {

@@ -1,4 +1,10 @@
-import { chatWebSocket } from "@/mocks/websocket";
+import { mockAgentData } from "@/mocks/handlers";
+import { getCurrentNavigationMocks } from "@/test-utils/test-utils";
+import {
+  chatWebSocket,
+  connectionEventCount,
+  resetConnectionEventCount,
+} from "@/mocks/websocket";
 import { render, screen, userEvent, waitFor } from "@/test-utils/test-utils";
 import { beforeEach, describe, expect, it } from "vitest";
 import AgentChat from "./page";
@@ -81,4 +87,26 @@ describe("AgentChat Page", () => {
       expect(screen.getByText("Hello from agent!")).toBeInTheDocument();
     });
   });
+});
+
+it("redirects a bookmarked V1 URL for an explicitly V2 agent without opening a V1 socket", async () => {
+  chatWebSocket.clients.forEach((client) => client.close());
+  resetConnectionEventCount();
+  render(<AgentChat />, {
+    navigation: navigationParams,
+    agent: {
+      fetchAgentById: {
+        success: true,
+        data: { ...mockAgentData, runtime_version: "v2" },
+      },
+    },
+  });
+  await screen.findByRole("status");
+  await waitFor(() =>
+    expect(getCurrentNavigationMocks().replace).toHaveBeenCalledWith(
+      "/v2/conversations?agent=agent-123"
+    )
+  );
+  expect(connectionEventCount).toBe(0);
+  expect(screen.queryByTestId("tool-chat-bar")).not.toBeInTheDocument();
 });

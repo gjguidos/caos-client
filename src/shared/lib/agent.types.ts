@@ -18,6 +18,8 @@ export type AgentSummary = {
    * or unknown values fall back to the chat workspace via `resolveWorkspace`.
    */
   type?: string | null;
+  /** Server-owned runtime contract; historical definitions default to V1. */
+  runtime_version?: "v1" | "v2";
   // Extended fields used by the agent editor
   /**
    * Reference key into the personality registry (e.g. "empty_eva"). Agents no
@@ -50,7 +52,10 @@ export type AgentSummary = {
  * All fields optional - only provided fields will be updated.
  */
 export type AgentUpdatePayload = Partial<
-  Omit<AgentSummary, "_id" | "id" | "system_name" | "chat_url">
+  Omit<
+    AgentSummary,
+    "_id" | "id" | "system_name" | "chat_url" | "runtime_version"
+  >
 >;
 
 /**

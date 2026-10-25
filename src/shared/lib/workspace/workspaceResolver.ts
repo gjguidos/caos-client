@@ -21,6 +21,7 @@ export interface WorkspacePanels {
 /** Minimal agent shape the resolver needs to build a route. */
 export interface WorkspaceAgentLike {
   type?: string | null;
+  runtime_version?: "v1" | "v2";
   system_name: string;
   id: string;
 }
@@ -96,8 +97,18 @@ export function getWorkspaceDescriptor(
 
 /** Resolve the workspace descriptor for an agent (by its `type`). */
 export function resolveWorkspace(
-  agent: Pick<WorkspaceAgentLike, "type">
+  agent: Pick<WorkspaceAgentLike, "type" | "runtime_version">
 ): WorkspaceDescriptor {
+  if (agent.runtime_version === "v2") {
+    return {
+      kind: "chat",
+      routeSegment: "v2/conversations",
+      panels: { left: false, right: false },
+      openLabel: "Open V2 conversation",
+      routeFor: (participant) =>
+        `/v2/conversations?agent=${encodeURIComponent(participant.id)}`,
+    };
+  }
   return getWorkspaceDescriptor(resolveWorkspaceKind(agent.type));
 }
 

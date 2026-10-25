@@ -108,3 +108,25 @@ describe("workspaceKindFromPathname", () => {
     }
   );
 });
+
+// Identity, names and providers never select the runtime.
+it("routes only explicitly V2 agents to participant setup", () => {
+  const agent = {
+    type: "chat",
+    system_name: "renamed",
+    id: "any-id",
+    runtime_version: "v2" as const,
+  };
+  expect(resolveWorkspace(agent).routeFor(agent)).toBe(
+    "/v2/conversations?agent=any-id"
+  );
+  expect(
+    resolveWorkspace({ ...agent, runtime_version: "v1" }).routeFor(agent)
+  ).toBe("/chat/renamed/any-id");
+  expect(
+    resolveWorkspace({ type: "chat" }).routeFor({
+      system_name: "adam",
+      id: "adam",
+    })
+  ).toBe("/chat/adam/adam");
+});

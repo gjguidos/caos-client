@@ -53,3 +53,6 @@ llmDocs/
 CLAUDE.md
 docs/jira/
 docs/TODO/
+# Local browser test artifacts (may contain conversation content)
+/test-results/
+/playwright-report/

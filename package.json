@@ -18,7 +18,8 @@
     "quality": "npm run type-check && npm run lint && npm run format:check",
     "quality:fix": "npm run type-check && npm run lint:fix && npm run format",
     "quality:ci": "npm run type-check && npm run lint:ci && npm run format:check",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@azure/msal-node": "3.8.4",
@@ -66,6 +67,7 @@
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "16.2.1",
+    "@playwright/test": "^1.64.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
