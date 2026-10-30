@@ -63,7 +63,7 @@ describe("SummaryPanel", () => {
   it("lists one entry per gap and blocks submit while any remain", () => {
     render(<Harness />, { preloadedState: registryState });
 
-    expect(screen.getByText("BEFORE YOU CREATE")).toBeInTheDocument();
+    expect(screen.getByText(/before you create/i)).toBeInTheDocument();
     expect(screen.getByText("Give the agent a name")).toBeInTheDocument();
     expect(screen.getByText("Pick an agent role")).toBeInTheDocument();
 

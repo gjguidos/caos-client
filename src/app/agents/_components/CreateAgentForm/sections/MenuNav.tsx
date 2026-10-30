@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Check } from "lucide-react";
@@ -13,6 +12,7 @@ import {
 } from "./wizardSteps";
 
 interface MenuNavProps {
+  settings?: boolean;
   selected: MenuSection;
   onSelect: (sec: MenuSection) => void;
   className?: string;
@@ -31,16 +31,14 @@ interface MenuNavProps {
  * - Steps requiring attention
  */
 export default function MenuNav({
+  settings = false,
   selected,
   onSelect,
   className,
   status = {},
 }: MenuNavProps) {
   return (
-    <nav
-      className={cn("flex flex-col", className)}
-      aria-label="Configuration"
-    >
+    <nav className={cn("flex flex-col", className)} aria-label="Configuration">
       <p className="px-5 pb-3 pt-6 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
         Configuration
       </p>
@@ -66,16 +64,14 @@ export default function MenuNav({
               <button
                 type="button"
                 onClick={() => onSelect(section)}
-                aria-current={active ? "step" : undefined}
+                aria-current={active ? (settings ? "page" : "step") : undefined}
                 className={cn(
                   "relative flex w-full items-center gap-3 rounded-lg px-3.5 py-3 text-left",
                   "transition-colors",
                   "focus-visible:outline-none",
                   "focus-visible:ring-2 focus-visible:ring-ring",
                   "focus-visible:ring-offset-2",
-                  active
-                    ? "bg-primary/10"
-                    : "hover:bg-muted"
+                  active ? "bg-primary/10" : "hover:bg-muted"
                 )}
               >
                 {/* Active step indicator */}
@@ -87,29 +83,25 @@ export default function MenuNav({
                 )}
 
                 {/* Step number / completed marker */}
-                <span
-                  className={cn(
-                    "flex size-[30px] shrink-0 items-center justify-center rounded-full",
-                    "text-[13px] font-bold",
-                    markerClass
-                  )}
-                  aria-hidden="true"
-                >
-                  {done && !active ? (
-                    <Check className="size-4" />
-                  ) : (
-                    index + 1
-                  )}
-                </span>
+                {!settings && (
+                  <span
+                    className={cn(
+                      "flex size-[30px] shrink-0 items-center justify-center rounded-full",
+                      "text-[13px] font-bold",
+                      markerClass
+                    )}
+                    aria-hidden="true"
+                  >
+                    {done && !active ? <Check className="size-4" /> : index + 1}
+                  </span>
+                )}
 
                 {/* Step label and description */}
                 <span className="flex min-w-0 flex-1 flex-col gap-0.5 leading-tight">
                   <span
                     className={cn(
                       "text-sm font-medium",
-                      active
-                        ? "text-primary"
-                        : "text-foreground"
+                      active ? "text-primary" : "text-foreground"
                     )}
                   >
                     {meta.label}

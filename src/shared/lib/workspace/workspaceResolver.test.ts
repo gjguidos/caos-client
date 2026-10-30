@@ -109,19 +109,54 @@ describe("workspaceKindFromPathname", () => {
   );
 });
 
-// Identity, names and providers never select the runtime.
-it("routes only explicitly V2 agents to participant setup", () => {
+// Identity, names and roles never select the GUI; the backend resolves defaults.
+it("routes the effective form and preserves the V1 fallback for empty lists", () => {
+  const agent = {
+    id: "enki",
+    system_name: "enki",
+    type: "form",
+    role_name: "enki",
+    runtime_version: "v2" as const,
+    effective_gui_components: [
+      {
+        type: "form",
+        key: "configuration",
+        default: true,
+        version: 1,
+        config: {},
+      },
+    ],
+  };
+  expect(resolveWorkspace(agent).routeFor(agent)).toBe("/v2/forms/enki");
+  expect(
+    resolveWorkspace({ ...agent, role_name: "crawler" }).routeFor(agent)
+  ).toBe("/v2/forms/enki");
+  expect(
+    resolveWorkspace({ ...agent, effective_gui_components: [] }).routeFor(agent)
+  ).toBe("/form/enki/enki");
+});
+
+it("routes Thoth's primary chat to the existing conversation experience", () => {
   const agent = {
     type: "chat",
     system_name: "renamed",
     id: "any-id",
     runtime_version: "v2" as const,
+    effective_gui_components: [
+      {
+        type: "chat",
+        key: "conversation",
+        default: true,
+        version: 1,
+        config: {},
+      },
+    ],
   };
   expect(resolveWorkspace(agent).routeFor(agent)).toBe(
     "/v2/conversations?agent=any-id"
   );
   expect(
-    resolveWorkspace({ ...agent, runtime_version: "v1" }).routeFor(agent)
+    resolveWorkspace({ ...agent, effective_gui_components: [] }).routeFor(agent)
   ).toBe("/chat/renamed/any-id");
   expect(
     resolveWorkspace({ type: "chat" }).routeFor({
@@ -129,4 +164,42 @@ it("routes only explicitly V2 agents to participant setup", () => {
       id: "adam",
     })
   ).toBe("/chat/adam/adam");
+});
+
+it.each(["dashboard", "terminal", "tabs"])(
+  "does not silently route unsupported %s to chat",
+  (type) => {
+    const agent = {
+      type: "chat",
+      system_name: "thoth",
+      id: "t",
+      effective_gui_components: [
+        { type, key: "primary", default: true, version: 1, config: {} },
+      ],
+    };
+    const workspace = resolveWorkspace(agent);
+    expect(workspace.openLabel).toBe("Unsupported interface");
+    expect(workspace.routeFor(agent)).toBe("/v2/forms/t");
+  }
+);
+
+it("does not fall back to chat for unsupported versions or ambiguous defaults", () => {
+  const component = {
+    type: "chat",
+    key: "primary",
+    default: true,
+    version: 2,
+    config: {},
+  };
+  expect(
+    resolveWorkspace({ effective_gui_components: [component] }).openLabel
+  ).toBe("Unsupported interface");
+  expect(
+    resolveWorkspace({
+      effective_gui_components: [
+        { ...component, version: 1 },
+        { ...component, version: 1, key: "second" },
+      ],
+    }).openLabel
+  ).toBe("Unsupported interface");
 });

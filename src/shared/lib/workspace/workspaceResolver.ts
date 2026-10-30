@@ -8,6 +8,8 @@
  * Pure module — no React, no Redux, no Next imports. Unit-tested in isolation.
  */
 
+import type { GuiComponentDescriptor } from "@/shared/lib/agent.types";
+
 export type WorkspaceKind = "chat" | "orchestration" | "form";
 
 /** Which AppShell side panels a workspace uses. */
@@ -22,6 +24,8 @@ export interface WorkspacePanels {
 export interface WorkspaceAgentLike {
   type?: string | null;
   runtime_version?: "v1" | "v2";
+  role_name?: string | null;
+  effective_gui_components?: GuiComponentDescriptor[];
   system_name: string;
   id: string;
 }
@@ -95,11 +99,30 @@ export function getWorkspaceDescriptor(
   };
 }
 
-/** Resolve the workspace descriptor for an agent (by its `type`). */
+/** Resolve the backend's primary GUI; only empty lists use the legacy type fallback. */
 export function resolveWorkspace(
-  agent: Pick<WorkspaceAgentLike, "type" | "runtime_version">
+  agent: Pick<
+    WorkspaceAgentLike,
+    "type" | "runtime_version" | "role_name" | "effective_gui_components"
+  >
 ): WorkspaceDescriptor {
-  if (agent.runtime_version === "v2") {
+  const components = agent.effective_gui_components ?? [];
+  if (components.length > 0) {
+    const defaults = components.filter((component) => component.default);
+    const primary = defaults.length === 1 ? defaults[0] : undefined;
+    if (primary?.type !== "chat" || primary.version !== 1) {
+      return {
+        kind: "form",
+        routeSegment: "v2/forms",
+        panels: { left: false, right: false },
+        openLabel:
+          primary?.type === "form" && primary.version === 1
+            ? "Open configuration draft"
+            : "Unsupported interface",
+        routeFor: (participant) =>
+          `/v2/forms/${encodeURIComponent(participant.id)}`,
+      };
+    }
     return {
       kind: "chat",
       routeSegment: "v2/conversations",

@@ -5,6 +5,8 @@ export type AgentToolConfig = {
 };
 
 export type AgentSummary = {
+  effective_gui_components?: GuiComponentDescriptor[];
+  form_presentations?: Record<string, unknown>;
   _id: string;
   id: string;
   name: string;
@@ -13,9 +15,8 @@ export type AgentSummary = {
   chat_url: string;
   role_name: string | null;
   /**
-   * Workspace discriminator. Selects which workspace an agent opens into
-   * (e.g. "orchestration" -> canvas workspace). Provided by the backend; absent
-   * or unknown values fall back to the chat workspace via `resolveWorkspace`.
+   * Functional Agent type. Used for legacy workspace routing only when the
+   * backend's effective GUI list is empty.
    */
   type?: string | null;
   /** Server-owned runtime contract; historical definitions default to V1. */
@@ -47,6 +48,23 @@ export type AgentSummary = {
   rule_pack_ids?: string[];
 };
 
+/** Backend-resolved presentation. Unknown types remain visible, never imply chat. */
+export type GuiComponentDescriptor = {
+  type: string;
+  key: string;
+  version: number;
+  default: boolean;
+  config: {
+    source?: {
+      kind: string;
+      contract?: string;
+      schema_version?: number;
+      key?: string;
+      version?: string;
+    };
+  };
+};
+
 /**
  * Payload for PATCH /v1/agents/id/{agent_id}.
  * All fields optional - only provided fields will be updated.
@@ -54,7 +72,13 @@ export type AgentSummary = {
 export type AgentUpdatePayload = Partial<
   Omit<
     AgentSummary,
-    "_id" | "id" | "system_name" | "chat_url" | "runtime_version"
+    | "_id"
+    | "id"
+    | "system_name"
+    | "chat_url"
+    | "runtime_version"
+    | "effective_gui_components"
+    | "form_presentations"
   >
 >;
 
@@ -84,6 +108,9 @@ export const COGNITIVE_MODULE_KEYS = [
 export type CognitiveModuleKey = (typeof COGNITIVE_MODULE_KEYS)[number];
 
 export type AgentFormValues = {
+  /** V2 review supports multiple packs; V1 keeps its existing single-pack input. */
+  rulePackIds?: string[];
+  guiComponents?: string;
   name: string;
   type: string;
   /** Selected role registry key, sent to the backend as `role_name`. */

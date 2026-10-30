@@ -1,15 +1,8 @@
-
 "use client";
 
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
-import {
-  ArrowLeft,
-  ArrowRight,
-  List,
-  Menu,
-  X,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, List, Menu, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -29,6 +22,7 @@ type Connection = {
 };
 
 interface AgentWizardShellProps {
+  navigationMode?: "wizard" | "settings";
   title: string;
 
   /** Label the exit by its destination, e.g. "Back to Planner". */
@@ -57,6 +51,7 @@ interface AgentWizardShellProps {
 }
 
 export default function AgentWizardShell({
+  navigationMode = "wizard",
   title,
   breadcrumb = "Back",
   backHref,
@@ -76,9 +71,7 @@ export default function AgentWizardShell({
   const hasPrev = idx > 0;
   const isLast = idx === MENU_ORDER.length - 1;
 
-  const nextLabel = !isLast
-    ? MENU_META[MENU_ORDER[idx + 1]].label
-    : "";
+  const nextLabel = !isLast ? MENU_META[MENU_ORDER[idx + 1]].label : "";
 
   const goPrev = () => {
     if (hasPrev) {
@@ -97,17 +90,9 @@ export default function AgentWizardShell({
       {/* Header */}
       <header className="flex h-[68px] flex-none items-center justify-between border-b border-border bg-card px-6">
         <div className="flex min-w-0 items-center gap-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            asChild
-            className="shrink-0"
-          >
+          <Button variant="ghost" size="sm" asChild className="shrink-0">
             <Link href={backHref}>
-              <ArrowLeft
-                className="size-4"
-                aria-hidden="true"
-              />
+              <ArrowLeft className="size-4" aria-hidden="true" />
               {breadcrumb}
             </Link>
           </Button>
@@ -125,9 +110,7 @@ export default function AgentWizardShell({
             >
               <span
                 className={`size-2 shrink-0 rounded-full ${
-                  connection.ok
-                    ? "bg-emerald-500"
-                    : "bg-destructive"
+                  connection.ok ? "bg-emerald-500" : "bg-destructive"
                 }`}
                 aria-hidden="true"
               />
@@ -143,13 +126,8 @@ export default function AgentWizardShell({
               size="sm"
               onClick={onViewLogs}
             >
-              <List
-                className="size-4"
-                aria-hidden="true"
-              />
-              <span className="hidden sm:inline">
-                View logs
-              </span>
+              <List className="size-4" aria-hidden="true" />
+              <span className="hidden sm:inline">View logs</span>
             </Button>
           )}
 
@@ -157,14 +135,10 @@ export default function AgentWizardShell({
             type="button"
             variant="ghost"
             size="icon"
-            aria-label={
-              mobileNavOpen ? "Close menu" : "Open menu"
-            }
+            aria-label={mobileNavOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileNavOpen}
             aria-controls="agent-wizard-mobile-nav"
-            onClick={() =>
-              setMobileNavOpen((current) => !current)
-            }
+            onClick={() => setMobileNavOpen((current) => !current)}
             className="size-9 md:hidden"
           >
             {mobileNavOpen ? (
@@ -184,6 +158,7 @@ export default function AgentWizardShell({
           aria-label="Agent configuration steps"
         >
           <MenuNav
+            settings={navigationMode === "settings"}
             selected={selected}
             onSelect={onSelect}
             status={stepStatus}
@@ -198,6 +173,7 @@ export default function AgentWizardShell({
             className="absolute inset-x-0 top-0 z-20 border-b border-border bg-card shadow-lg md:hidden"
           >
             <MenuNav
+              settings={navigationMode === "settings"}
               selected={selected}
               onSelect={(section) => {
                 onSelect(section);
@@ -214,49 +190,45 @@ export default function AgentWizardShell({
             {children}
 
             {/* Navigation footer */}
-            <div className="mt-6 flex items-center justify-between gap-4">
-              <span className="shrink-0 text-xs text-muted-foreground">
-                Step {stepNum} of {MENU_ORDER.length}
-              </span>
+            {navigationMode === "wizard" && (
+              <div className="mt-6 flex items-center justify-between gap-4">
+                <span className="shrink-0 text-xs text-muted-foreground">
+                  Step {stepNum} of {MENU_ORDER.length}
+                </span>
 
-              <div className="flex items-center gap-2.5">
-                {hasPrev && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={goPrev}
-                  >
-                    <ArrowLeft
-                      className="size-4"
-                      aria-hidden="true"
-                    />
-                    Back
-                  </Button>
-                )}
+                <div className="flex items-center gap-2.5">
+                  {hasPrev && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={goPrev}
+                    >
+                      <ArrowLeft className="size-4" aria-hidden="true" />
+                      Back
+                    </Button>
+                  )}
 
-                {!isLast && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={goNext}
-                  >
-                    Next: {nextLabel}
-                    <ArrowRight
-                      className="size-4"
-                      aria-hidden="true"
-                    />
-                  </Button>
-                )}
+                  {!isLast && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={goNext}
+                    >
+                      Next: {nextLabel}
+                      <ArrowRight className="size-4" aria-hidden="true" />
+                    </Button>
+                  )}
 
-                {isLast && submitAction && (
-                  <div className="flex items-center gap-3 lg:hidden">
-                    {submitAction}
-                  </div>
-                )}
+                  {isLast && submitAction && (
+                    <div className="flex items-center gap-3 lg:hidden">
+                      {submitAction}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </main>
 

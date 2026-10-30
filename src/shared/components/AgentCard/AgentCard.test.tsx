@@ -13,6 +13,40 @@ const agent = {
 } as unknown as AgentSummary;
 
 describe("AgentCard", () => {
+  it("offers the V2 Enki draft and an independent conversation entry", () => {
+    render(
+      <AgentCard
+        agent={{
+          ...agent,
+          type: "form",
+          role_name: "enki",
+          runtime_version: "v2",
+          effective_gui_components: [
+            {
+              type: "form",
+              key: "configuration",
+              default: true,
+              version: 1,
+              config: {},
+            },
+            {
+              type: "chat",
+              key: "conversation",
+              default: false,
+              version: 1,
+              config: {},
+            },
+          ],
+        }}
+      />
+    );
+    const card = screen.getByRole("article", { name: "Agent: Planner" });
+    expect(card.querySelector('a[href="/v2/forms/agent-1"]')).not.toBeNull();
+    expect(
+      within(card).getByRole("link", { name: "Open conversation" })
+    ).toHaveAttribute("href", "/v2/conversations?agent=agent-1");
+  });
+
   it("always links the card body at the agent's workspace, never the editor", () => {
     render(<AgentCard agent={agent} onDelete={vi.fn()} />, {
       auth: { canCreateAgent: true },

@@ -82,6 +82,8 @@ export interface ToolDefinition extends RegistryEntry<ToolMetadata> {
   default_config?: { trigger_words?: string[]; [key: string]: unknown };
   /** Python class path reference, e.g. "src.domains.agentverse.tools.writer_tool.WriterToolConfig" */
   config_schema?: string;
+  /** Public projection of the Tool's schema, limited to its Agent admin fields. */
+  agent_config_schema?: Record<string, unknown>;
   parameters_schema?: Record<string, unknown>;
 
   // Classification
@@ -106,6 +108,8 @@ export interface ToolDefinition extends RegistryEntry<ToolMetadata> {
     files?: FilesSupport;
   };
   requires_collection?: boolean;
+  required_rulepacks?: boolean;
+  min_rulepacks?: number | null;
   examples?: unknown[];
   instructions?: string;
 }

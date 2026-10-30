@@ -1,9 +1,9 @@
-
 "use client";
 
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Info, Pencil } from "lucide-react";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 
@@ -47,10 +47,7 @@ export function AgentCard({
   const workspace = resolveWorkspace(agent);
   const workspaceHref = workspace.routeFor(agent);
 
-  const editHref = withReturnTo(
-    `/agents/${agent.id}/edit`,
-    pathname
-  );
+  const editHref = withReturnTo(`/agents/${agent.id}/edit`, pathname);
 
   return (
     <>
@@ -60,6 +57,18 @@ export function AgentCard({
         openLabel={workspace.openLabel}
         actions={
           <>
+            {workspace.kind !== "chat" &&
+              agent.effective_gui_components?.some(
+                (component) =>
+                  component.type === "chat" && component.version === 1
+              ) && (
+                <Link
+                  href={`/v2/conversations?agent=${encodeURIComponent(agent.id)}`}
+                  className="rounded-md p-2 text-sm underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  Open conversation
+                </Link>
+              )}
             <Button
               type="button"
               variant="ghost"
@@ -69,10 +78,7 @@ export function AgentCard({
               onClick={() => setShowDetails(true)}
               className="size-8"
             >
-              <Info
-                className="size-4"
-                aria-hidden="true"
-              />
+              <Info className="size-4" aria-hidden="true" />
             </Button>
 
             {canCreateAgent && (
@@ -85,10 +91,7 @@ export function AgentCard({
                 onClick={() => router.push(editHref)}
                 className="size-8"
               >
-                <Pencil
-                  className="size-4"
-                  aria-hidden="true"
-                />
+                <Pencil className="size-4" aria-hidden="true" />
               </Button>
             )}
           </>
@@ -110,8 +113,7 @@ export function AgentCard({
           </h3>
 
           <p className="mt-1 line-clamp-4 text-sm leading-relaxed text-muted-foreground">
-            {personality?.description ||
-              "No description available."}
+            {personality?.description || "No description available."}
           </p>
         </div>
       </ResourceCard>

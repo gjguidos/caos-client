@@ -101,7 +101,7 @@ function resolveWidget(input: string | undefined): {
   }
 }
 
-function inputFieldToUIComponent(
+export function inputFieldToUIComponent(
   field: WorkflowInputField,
   index: number,
   workflowKey: string | undefined

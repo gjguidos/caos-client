@@ -23,7 +23,8 @@ export function useDraftStatus(
   form: UseFormReturn<AgentFormValues>,
   cognitiveModules: CognitiveModuleMap,
   selected: MenuSection,
-  onSelect: (step: MenuSection) => void
+  onSelect: (step: MenuSection) => void,
+  resolveGaps?: (values: AgentFormValues) => Gap[]
 ) {
   const values = useWatch({ control: form.control }) as AgentFormValues;
   const [visited, setVisited] = useState<Set<MenuSection>>(
@@ -38,8 +39,13 @@ export function useDraftStatus(
   }, [selected]);
 
   const gaps = useMemo(
-    () => (values ? getDraftGaps(values, { cognitiveModules }) : []),
-    [values, cognitiveModules]
+    () =>
+      values
+        ? resolveGaps
+          ? resolveGaps(values)
+          : getDraftGaps(values, { cognitiveModules })
+        : [],
+    [values, cognitiveModules, resolveGaps]
   );
 
   /**

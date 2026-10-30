@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import type { UseFormReturn } from "react-hook-form";
 import { useWatch } from "react-hook-form";
 import { ArrowRight } from "lucide-react";
@@ -24,10 +23,7 @@ import {
   useSoulRegistry,
 } from "@/store/selectors";
 
-import {
-  findByKey,
-  labelForKey,
-} from "@/store/slices/registry/registryEntry";
+import { findByKey, labelForKey } from "@/store/slices/registry/registryEntry";
 
 import type { ToolDefinition } from "@/store/slices/registry/toolsSlice";
 
@@ -39,10 +35,7 @@ import type {
 import RulePackPreviewDialog from "../../dialogs/RulePackDialog";
 import SoulInspectorDialog from "../../dialogs/SoulInspectorDialog";
 
-import {
-  type Gap,
-  provenanceOf,
-} from "../draftStatus";
+import { type Gap, provenanceOf } from "../draftStatus";
 
 import type { StructuredSoul } from "../soul";
 import type { Team as Group } from "./SecuritySection";
@@ -53,6 +46,8 @@ import { SubmitButton } from "./SubmitAction";
 type FormValues = AgentFormValues;
 
 interface SummaryProps {
+  reviewContent?: ReactNode;
+  reviewOnly?: boolean;
   form: UseFormReturn<FormValues>;
   onSubmit: () => void;
 
@@ -87,6 +82,8 @@ interface SummaryProps {
  * not from the currently selected wizard step.
  */
 export default function SummaryPanel({
+  reviewContent,
+  reviewOnly = false,
   form,
   onSubmit,
   toolRegs = [],
@@ -100,11 +97,9 @@ export default function SummaryPanel({
   footnote,
   soul,
 }: SummaryProps) {
-  const [personaDialogOpen, setPersonaDialogOpen] =
-    useState(false);
+  const [personaDialogOpen, setPersonaDialogOpen] = useState(false);
 
-  const [rulepackDialogOpen, setRulepackDialogOpen] =
-    useState(false);
+  const [rulepackDialogOpen, setRulepackDialogOpen] = useState(false);
 
   const rulePackRegs = useRulePackRegistry();
   const agentTypeRegs = useAgentTypeRegistry();
@@ -145,34 +140,26 @@ export default function SummaryPanel({
     return lookup;
   }, [groups]);
 
-  const allowedGroups = (
-    security?.whitelisted_groups ?? []
-  ).map((id) => groupLookup.get(id)?.name ?? id);
+  const allowedGroups = (security?.whitelisted_groups ?? []).map(
+    (id) => groupLookup.get(id)?.name ?? id
+  );
 
   const visibility = security?.visibility ?? "public";
   const isPrivate = visibility === "private";
 
-  const selectedRulePack = findByKey(
-    rulePackRegs,
-    rulepackRegistry
-  );
+  const selectedRulePack = findByKey(rulePackRegs, rulepackRegistry);
 
   // Registry keys are displayed as human-readable labels.
   const typeLabel = labelForKey(agentTypeRegs, type);
   const roleLabel = labelForKey(roleRegs, roleRegistry);
-  const rulepackLabel = labelForKey(
-    rulePackRegs,
-    rulepackRegistry
-  );
+  const rulepackLabel = labelForKey(rulePackRegs, rulepackRegistry);
 
-  const personaName = labelForKey(
-    soulRegs,
-    personalityRegistry
-  );
+  const personaName = labelForKey(soulRegs, personalityRegistry);
 
-  const moduleEntries = Object.entries(
-    cognitiveModules
-  ) as [CognitiveModuleKey, ModuleDesc][];
+  const moduleEntries = Object.entries(cognitiveModules) as [
+    CognitiveModuleKey,
+    ModuleDesc,
+  ][];
 
   return (
     <>
@@ -191,9 +178,7 @@ export default function SummaryPanel({
           </h2>
 
           <p className="mt-1 text-xs text-muted-foreground">
-            {typeLabel
-              ? `${typeLabel} agent`
-              : "No type chosen"}
+            {typeLabel ? `${typeLabel} agent` : "No type chosen"}
 
             {roleLabel ? ` · ${roleLabel}` : ""}
           </p>
@@ -225,9 +210,7 @@ export default function SummaryPanel({
             <SpecRow
               label="Personality"
               value={personaName || "None"}
-              provenance={provenanceOf(
-                personalityRegistry
-              )}
+              provenance={provenanceOf(personalityRegistry)}
               onActivate={
                 personalityRegistry
                   ? () => setPersonaDialogOpen(true)
@@ -237,14 +220,10 @@ export default function SummaryPanel({
 
             <SpecRow
               label="Rule pack"
-              value={rulepackLabel || "None"}
-              provenance={provenanceOf(
-                rulepackRegistry
-              )}
+              value={values.rulePackIds?.join(", ") || rulepackLabel || "None"}
+              provenance={provenanceOf(rulepackRegistry)}
               onActivate={
-                rulepackRegistry
-                  ? () => setRulepackDialogOpen(true)
-                  : undefined
+                rulepackRegistry ? () => setRulepackDialogOpen(true) : undefined
               }
             />
           </SpecGroup>
@@ -252,14 +231,8 @@ export default function SummaryPanel({
           <SpecGroup title="CAPABILITIES">
             <SpecRow
               label="Tools"
-              value={
-                tools.length
-                  ? `${tools.length} enabled`
-                  : "None"
-              }
-              provenance={
-                tools.length ? "set" : "empty"
-              }
+              value={tools.length ? `${tools.length} enabled` : "None"}
+              provenance={tools.length ? "set" : "empty"}
             />
 
             {tools.length > 0 && (
@@ -272,8 +245,7 @@ export default function SummaryPanel({
                   >
                     <span className="truncate">
                       {toolRegs.find(
-                        (registryTool) =>
-                          registryTool.key === tool.key
+                        (registryTool) => registryTool.key === tool.key
                       )?.name ?? tool.key}
                     </span>
                   </Badge>
@@ -288,11 +260,7 @@ export default function SummaryPanel({
                   ? `${attachedWorkflows.length} attached`
                   : "None"
               }
-              provenance={
-                attachedWorkflows.length
-                  ? "set"
-                  : "empty"
-              }
+              provenance={attachedWorkflows.length ? "set" : "empty"}
             />
 
             {attachedWorkflows.length > 0 && (
@@ -300,11 +268,7 @@ export default function SummaryPanel({
                 {attachedWorkflows.map((workflow) => (
                   <Badge
                     key={workflow.key}
-                    variant={
-                      workflow.stale
-                        ? "outline"
-                        : "secondary"
-                    }
+                    variant={workflow.stale ? "outline" : "secondary"}
                     className={cn(
                       "max-w-full rounded-full px-2.5 py-1 text-xs font-normal",
                       workflow.stale &&
@@ -313,8 +277,7 @@ export default function SummaryPanel({
                   >
                     <span className="truncate">
                       {workflow.name}
-                      {workflow.stale &&
-                        " · not in catalog"}
+                      {workflow.stale && " · not in catalog"}
                     </span>
                   </Badge>
                 ))}
@@ -325,18 +288,14 @@ export default function SummaryPanel({
           {moduleEntries.length > 0 && (
             <SpecGroup title="COGNITIVE">
               {moduleEntries.map(([key, description]) => {
-                const value =
-                  values?.cognitive_modules?.[key] ?? "";
+                const value = values?.cognitive_modules?.[key] ?? "";
 
                 return (
                   <SpecRow
                     key={key}
                     label={humanizeKey(key)}
                     value={value || "None"}
-                    provenance={provenanceOf(
-                      value,
-                      description.default
-                    )}
+                    provenance={provenanceOf(value, description.default)}
                     mono={Boolean(value)}
                   />
                 );
@@ -354,19 +313,12 @@ export default function SummaryPanel({
             {isPrivate && (
               <SpecRow
                 label="Allowed groups"
-                value={
-                  allowedGroups.length
-                    ? allowedGroups.join(", ")
-                    : "None"
-                }
-                provenance={
-                  allowedGroups.length
-                    ? "set"
-                    : "empty"
-                }
+                value={allowedGroups.length ? allowedGroups.join(", ") : "None"}
+                provenance={allowedGroups.length ? "set" : "empty"}
               />
             )}
           </SpecGroup>
+          {reviewContent}
         </div>
 
         {/* Footer */}
@@ -408,14 +360,20 @@ export default function SummaryPanel({
             </div>
           )}
 
-          <SubmitButton
-            gaps={gaps}
-            onSubmit={onSubmit}
-            label={submitLabel}
-            submitting={submitting}
-            busyReason={busyReason}
-            fluid
-          />
+          {reviewOnly ? (
+            <p className="text-sm text-muted-foreground">
+              Create Agent unavailable — governed submission is not implemented.
+            </p>
+          ) : (
+            <SubmitButton
+              gaps={gaps}
+              onSubmit={onSubmit}
+              label={submitLabel}
+              submitting={submitting}
+              busyReason={busyReason}
+              fluid
+            />
+          )}
 
           {footnote && gaps.length === 0 && (
             <p className="mt-3 text-center text-xs text-muted-foreground">
